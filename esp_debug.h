@@ -20,7 +20,7 @@
 #define ESSERT(v) BUG_ON(!(v))
 #else
 #define ESSERT(v) if(!(v)) printk("ESSERT:%s %d\n", __FILE__, __LINE__)
-#endif 
+#endif
 
 
 #include <linux/slab.h>
@@ -28,11 +28,11 @@
 #include <asm/uaccess.h>
 
 typedef enum esp_type {
-        ESP_BOOL,
-        ESP_U8,
-        ESP_U16,
-        ESP_U32,
-        ESP_U64
+    ESP_BOOL,
+    ESP_U8,
+    ESP_U16,
+    ESP_U32,
+    ESP_U64
 } esp_type;
 
 struct dentry *esp_dump_var(const char *name, struct dentry *parent, void *value, esp_type type);
@@ -48,16 +48,16 @@ int esp_debugfs_init(void);
 void esp_debugfs_exit(void);
 
 enum {
-        ESP_DBG_ERROR = BIT(0),
-        ESP_DBG_TRACE = BIT(1),
-        ESP_DBG_LOG = BIT(2),
-        ESP_DBG = BIT(3),
-        ESP_SHOW = BIT(4),
-        ESP_DBG_TXAMPDU = BIT(5),
-        ESP_DBG_OP = BIT(6),
-	ESP_DBG_PS = BIT(7),
-	ESP_ATE = BIT(8),
-        ESP_DBG_ALL = 0xffffffff
+    ESP_DBG_ERROR = BIT(0),
+    ESP_DBG_TRACE = BIT(1),
+    ESP_DBG_LOG = BIT(2),
+    ESP_DBG = BIT(3),
+    ESP_SHOW = BIT(4),
+    ESP_DBG_TXAMPDU = BIT(5),
+    ESP_DBG_OP = BIT(6),
+    ESP_DBG_PS = BIT(7),
+    ESP_ATE = BIT(8),
+    ESP_DBG_ALL = 0xffffffff
 };
 
 extern unsigned int esp_msg_level;
@@ -70,12 +70,12 @@ extern bool log_off;
 #include "esp_file.h"
 #define esp_dbg(mask, fmt, args...) do {                  \
         if (esp_msg_level & mask)   			  \
-	{						  \
-		if (log_off)      		          \
-			printk(fmt, ##args);              \
-		else 					              \
-            		logger_write(4, "esp_wifi", fmt, ##args);     \
-	}							      \
+        {						  \
+            if (log_off)      		          \
+                printk(fmt, ##args);              \
+            else 					              \
+                logger_write(4, "esp_wifi", fmt, ##args);     \
+        }							      \
     } while (0)
 #else
 #define esp_dbg(mask, fmt, args...) do {                  \

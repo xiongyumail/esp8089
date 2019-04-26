@@ -48,9 +48,9 @@ void esp_release_firmware(const struct firmware *firmware);
 #define MAX_BUF_LEN ((CONF_ATTR_LEN + CONF_VAL_LEN + 2) * MAX_ATTR_NUM + 2)
 
 struct esp_init_table_elem {
-	char attr[CONF_ATTR_LEN];
-	int offset;
-	short value;
+    char attr[CONF_ATTR_LEN];
+    int offset;
+    short value;
 };
 
 int request_init_conf(void);
@@ -58,10 +58,10 @@ void fix_init_data(u8 *init_data_buf, int buf_size);
 
 
 #ifdef ESP_ANDROID_LOGGER
-extern int logger_write( const unsigned char prio,
-                         const char __kernel * const tag,
-                         const char __kernel * const fmt,
-                         ...);
+extern int logger_write(const unsigned char prio,
+                        const char __kernel *const tag,
+                        const char __kernel *const fmt,
+                        ...);
 
 #endif
 

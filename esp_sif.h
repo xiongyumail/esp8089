@@ -32,61 +32,61 @@
 
 /* S/W struct mapping to slc registers */
 typedef struct slc_host_regs {
-        /* do NOT read token_rdata
-         *
-                u32 pf_data;
-                u32 token_rdata;
-        */
-        u32 intr_raw;
-        u32 state_w0;
-        u32 state_w1;
-        u32 config_w0;
-        u32 config_w1;
-        u32 intr_status;
-        u32 config_w2;
-        u32 config_w3;
-        u32 config_w4;
-        u32 token_wdata;
-        u32 intr_clear;
-        u32 intr_enable;
+    /* do NOT read token_rdata
+     *
+            u32 pf_data;
+            u32 token_rdata;
+    */
+    u32 intr_raw;
+    u32 state_w0;
+    u32 state_w1;
+    u32 config_w0;
+    u32 config_w1;
+    u32 intr_status;
+    u32 config_w2;
+    u32 config_w3;
+    u32 config_w4;
+    u32 token_wdata;
+    u32 intr_clear;
+    u32 intr_enable;
 } sif_slc_reg_t;
 
 
-enum io_sync_type {	
-	ESP_SIF_NOSYNC = 0,
-	ESP_SIF_SYNC, 
+enum io_sync_type {
+    ESP_SIF_NOSYNC = 0,
+    ESP_SIF_SYNC,
 };
 
 #ifdef ESP_USE_SDIO
 typedef struct esp_sdio_ctrl {
-        struct sdio_func *func;
+    struct sdio_func *func;
 #else
 typedef struct esp_spi_ctrl {
-        struct spi_device *spi;
+    struct spi_device *spi;
 #endif
-        struct esp_pub *epub;
+    struct esp_pub *epub;
 
 
-        struct list_head free_req;
+    struct list_head free_req;
 
-        u8 *dma_buffer;
+    u8 *dma_buffer;
 
-        spinlock_t scat_lock;
-        struct list_head scat_req;
+    spinlock_t scat_lock;
+    struct list_head scat_req;
 
-        bool off;
-        atomic_t irq_handling;
+    bool off;
+    atomic_t irq_handling;
 #ifdef ESP_USE_SDIO
-        const struct sdio_device_id *id;
+    const struct sdio_device_id *id;
 #else
-        const struct spi_device_id *id;
+    const struct spi_device_id *id;
 #endif
-        u32 slc_blk_sz;
-        u32 target_id;
-        u32 slc_window_end_addr;
+    u32 slc_blk_sz;
+    u32 target_id;
+    u32 slc_window_end_addr;
 
-        struct slc_host_regs slc_regs;
-        atomic_t 	irq_installed;
+    struct slc_host_regs slc_regs;
+    atomic_t 	irq_installed;
 
 #ifdef ESP_USE_SDIO
 } esp_sdio_ctrl_t;
@@ -96,15 +96,15 @@ typedef struct esp_spi_ctrl {
 
 #ifdef ESP_USE_SPI
 struct esp_spi_resp {
-	u32 max_dataW_resp_size;
-	u32 max_dataR_resp_size;
-	u32 max_block_dataW_resp_size;
-	u32 max_block_dataR_resp_size;
-	u32 max_cmd_resp_size;
-	u32 data_resp_size_w;
-	u32 data_resp_size_r;
-	u32 block_w_data_resp_size_final;
-	u32 block_r_data_resp_size_final;
+    u32 max_dataW_resp_size;
+    u32 max_dataR_resp_size;
+    u32 max_block_dataW_resp_size;
+    u32 max_block_dataR_resp_size;
+    u32 max_cmd_resp_size;
+    u32 data_resp_size_w;
+    u32 data_resp_size_r;
+    u32 block_w_data_resp_size_final;
+    u32 block_r_data_resp_size_final;
 };
 #endif
 
@@ -122,30 +122,30 @@ struct esp_spi_resp {
 
 #ifdef ESP_USE_SDIO
 #define EPUB_CTRL_CHECK(_epub, _go_err) do{\
-	if (_epub == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if ((_epub)->sif == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-}while(0)
+        if (_epub == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if ((_epub)->sif == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+    }while(0)
 
 #define EPUB_FUNC_CHECK(_epub, _go_err) do{\
-	if (_epub == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if ((_epub)->sif == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if (((struct esp_sdio_ctrl *)(_epub)->sif)->func == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-}while(0)
+        if (_epub == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if ((_epub)->sif == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if (((struct esp_sdio_ctrl *)(_epub)->sif)->func == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+    }while(0)
 
 #define EPUB_TO_CTRL(_epub) (((struct esp_sdio_ctrl *)(_epub)->sif))
 
@@ -155,30 +155,30 @@ struct esp_spi_resp {
 
 #ifdef ESP_USE_SPI
 #define EPUB_CTRL_CHECK(_epub, _go_err) do{\
-	if (_epub == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if ((_epub)->sif == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-}while(0)
+        if (_epub == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if ((_epub)->sif == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+    }while(0)
 
 #define EPUB_FUNC_CHECK(_epub, _go_err) do{\
-	if (_epub == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if ((_epub)->sif == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-	if (((struct esp_spi_ctrl *)(_epub)->sif)->spi == NULL) {\
-		ESSERT(0);\
-		goto _go_err;\
-	}\
-}while(0)
+        if (_epub == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if ((_epub)->sif == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+        if (((struct esp_spi_ctrl *)(_epub)->sif)->spi == NULL) {\
+            ESSERT(0);\
+            goto _go_err;\
+        }\
+    }while(0)
 
 #define EPUB_TO_CTRL(_epub) (((struct esp_spi_ctrl *)(_epub)->sif))
 
@@ -200,18 +200,18 @@ u32 sif_get_target_id(struct esp_pub *epub);
 void sif_dsr(struct sdio_func *func);
 int sif_io_raw(struct esp_pub *epub, u32 addr, u8 *buf, u32 len, u32 flag);
 int sif_io_sync(struct esp_pub *epub, u32 addr, u8 *buf, u32 len, u32 flag);
-int sif_io_async(struct esp_pub *epub, u32 addr, u8 *buf, u32 len, u32 flag, void * context);
+int sif_io_async(struct esp_pub *epub, u32 addr, u8 *buf, u32 len, u32 flag, void *context);
 int sif_lldesc_read_sync(struct esp_pub *epub, u8 *buf, u32 len);
 int sif_lldesc_write_sync(struct esp_pub *epub, u8 *buf, u32 len);
 int sif_lldesc_read_raw(struct esp_pub *epub, u8 *buf, u32 len, bool noround);
 int sif_lldesc_write_raw(struct esp_pub *epub, u8 *buf, u32 len);
 void sif_platform_check_r1_ready(struct esp_pub *epub);
-#endif 
+#endif
 
 #ifdef ESP_USE_SPI
 enum if_dummymode {
-	NOT_DUMMYMODE = 0,
-	DUMMYMODE,
+    NOT_DUMMYMODE = 0,
+    DUMMYMODE,
 };
 
 #ifdef REGISTER_SPI_BOARD_INFO
@@ -220,14 +220,14 @@ void sif_platform_register_board_info(void);
 
 void sif_dsr(struct spi_device *spi);
 int sif_spi_read_mix_nosync(struct spi_device *spi, unsigned int addr, unsigned char *buf, int len, int dummymode);
-int sif_spi_epub_read_mix_sync(struct esp_pub *epub, unsigned int addr,unsigned char *buf, int len, int dummymode);
-int sif_spi_epub_read_mix_nosync(struct esp_pub *epub, unsigned int addr,unsigned char *buf, int len, int dummymode);
+int sif_spi_epub_read_mix_sync(struct esp_pub *epub, unsigned int addr, unsigned char *buf, int len, int dummymode);
+int sif_spi_epub_read_mix_nosync(struct esp_pub *epub, unsigned int addr, unsigned char *buf, int len, int dummymode);
 int sif_spi_read_sync(struct esp_pub *epub, unsigned char *buf, int len, int dummymode);
 int sif_spi_read_nosync(struct esp_pub *epub, unsigned char *buf, int len, int dummymode, bool noround);
 
 int sif_spi_write_mix_nosync(struct spi_device *spi, unsigned int addr, unsigned char *buf, int len, int dummymode);
-int sif_spi_epub_write_mix_sync(struct esp_pub *epub, unsigned int addr,unsigned char *buf, int len, int dummymode);
-int sif_spi_epub_write_mix_nosync(struct esp_pub *epub, unsigned int addr,unsigned char *buf, int len, int dummymode);
+int sif_spi_epub_write_mix_sync(struct esp_pub *epub, unsigned int addr, unsigned char *buf, int len, int dummymode);
+int sif_spi_epub_write_mix_nosync(struct esp_pub *epub, unsigned int addr, unsigned char *buf, int len, int dummymode);
 int sif_spi_write_sync(struct esp_pub *epub, unsigned char *buf, int len, int dummymode);
 int sif_spi_write_nosync(struct esp_pub *epub, unsigned char *buf, int len, int dummymode);
 
@@ -238,8 +238,8 @@ void sif_platform_irq_mask(int enable_mask);
 int sif_platform_irq_init(void);
 void sif_platform_irq_deinit(void);
 
-int sif_spi_write_bytes(struct spi_device *spi, unsigned int addr,unsigned char *dst, int count, int check_idle);
-int sif_spi_read_bytes(struct spi_device *spi, unsigned int addr,unsigned char *dst, int count, int check_idle);
+int sif_spi_write_bytes(struct spi_device *spi, unsigned int addr, unsigned char *dst, int count, int check_idle);
+int sif_spi_read_bytes(struct spi_device *spi, unsigned int addr, unsigned char *dst, int count, int check_idle);
 struct esp_spi_resp *sif_get_spi_resp(void);
 #endif
 
@@ -256,7 +256,7 @@ int sif_write_reg_window(struct esp_pub *epub, unsigned int reg_addr, unsigned c
 int sif_ack_target_read_err(struct esp_pub *epub);
 int sif_had_io_enable(struct esp_pub *epub);
 
-struct slc_host_regs * sif_get_regs(struct esp_pub *epub);
+struct slc_host_regs *sif_get_regs(struct esp_pub *epub);
 
 void sif_lock_bus(struct esp_pub *epub);
 void sif_unlock_bus(struct esp_pub *epub);

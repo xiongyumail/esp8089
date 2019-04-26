@@ -240,15 +240,15 @@
 
 #define SLC_SET_FROM_HOST_ADDR_WINDOW(v)   do { \
         (v) &= 0xffff;    \
-	(v) &= SLC_ADDR_WINDOW_CLEAR_MASK; \
-	(v) |= SLC_FROM_HOST_ADDR_WINDOW; \
-} while (0);
+        (v) &= SLC_ADDR_WINDOW_CLEAR_MASK; \
+        (v) |= SLC_FROM_HOST_ADDR_WINDOW; \
+    } while (0);
 
 #define SLC_SET_TO_HOST_ADDR_WINDOW(v)   do { \
         (v) &= 0xffff;    \
-	(v) &= SLC_ADDR_WINDOW_CLEAR_MASK; \
-	(v) |= SLC_TO_HOST_ADDR_WINDOW; \
-} while (0);
+        (v) &= SLC_ADDR_WINDOW_CLEAR_MASK; \
+        (v) |= SLC_TO_HOST_ADDR_WINDOW; \
+    } while (0);
 
 #define SLC_INT_ENA                     	(REG_SLC_BASE + 0xC)
 #define SLC_RX_EOF_INT_ENA BIT(17)

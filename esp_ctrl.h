@@ -18,7 +18,7 @@
 
 int sip_send_loopback_mblk(struct esp_sip *sip, int txpacket_len, int rxpacket_len, int packet_id);
 
-int sip_send_config(struct esp_pub *epub, struct ieee80211_conf * conf);
+int sip_send_config(struct esp_pub *epub, struct ieee80211_conf *conf);
 
 int sip_send_setkey(struct esp_pub *epub, u8 bssid_no, u8 *peer_addr, struct ieee80211_key_conf *key, u8 isvalid);
 
@@ -30,7 +30,7 @@ int sip_send_bss_info_update(struct esp_pub *epub, struct esp_vif *evif, u8 *bss
 
 int  sip_send_wmm_params(struct esp_pub *epub, u8 aci, const struct ieee80211_tx_queue_params *params);
 
-int sip_send_ampdu_action(struct esp_pub *epub, u8 action_num, const u8 * addr, u16 tid, u16 ssn, u8 buf_size);
+int sip_send_ampdu_action(struct esp_pub *epub, u8 action_num, const u8 *addr, u16 tid, u16 ssn, u8 buf_size);
 
 int sip_send_roc(struct esp_pub *epub, u16 center_freq, u16 duration);
 
