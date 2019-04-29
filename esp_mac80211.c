@@ -241,7 +241,7 @@ static int esp_op_add_interface(struct ieee80211_hw *hw,
     switch (vif->type) {
         case NL80211_IFTYPE_STATION:
             //if (svif.index == 1)
-            //	vif->type = NL80211_IFTYPE_UNSPECIFIED;
+            //    vif->type = NL80211_IFTYPE_UNSPECIFIED;
             ESP_IEEE80211_DBG(ESP_SHOW, "%s STA \n", __func__);
             svif.op_mode = 0;
             svif.is_p2p = 0;
@@ -456,51 +456,55 @@ static bool beacon_tim_alter(struct sk_buff *beacon)
 
 unsigned long init_jiffies;
 unsigned long cycle_beacon_count;
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
 static void drv_handle_beacon(unsigned long data)
+#else
+struct ieee80211_vif *_gvif = NULL;
+static void drv_handle_beacon(struct timer_list *list)
+#endif
 {
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
     struct ieee80211_vif *vif = (struct ieee80211_vif *) data;
+#else
+    struct ieee80211_vif *vif = (struct ieee80211_vif *) _gvif;
+#endif
     struct esp_vif *evif = (struct esp_vif *)vif->drv_priv;
     struct sk_buff *beacon;
     struct sk_buff *skb;
     static int dbgcnt = 0;
     bool tim_reach = false;
 
-    if (evif->epub == NULL) {
+    if(evif->epub == NULL)
         return;
-    }
 
-    mdelay(2400 * (cycle_beacon_count % 25) % 10000 / 1000);
-
+    mdelay(2400 * (cycle_beacon_count % 25) % 10000 /1000);
+    
     beacon = ieee80211_beacon_get(evif->epub->hw, vif);
 
     tim_reach = beacon_tim_alter(beacon);
 
     if (beacon && !(dbgcnt++ % 600)) {
         ESP_IEEE80211_DBG(ESP_SHOW, " beacon length:%d,fc:0x%x\n", beacon->len,
-                          ((struct ieee80211_mgmt *)(beacon->data))->frame_control);
+            ((struct ieee80211_mgmt *)(beacon->data))->frame_control);
 
     }
 
-    if (beacon) {
+    if(beacon)
         sip_tx_data_pkt_enqueue(evif->epub, beacon);
-    }
 
-    if (cycle_beacon_count++ == 100) {
+    if(cycle_beacon_count++ == 100){
         init_jiffies = jiffies;
         cycle_beacon_count -= 100;
     }
-
-#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))
-    mod_timer(&evif->beacon_timer, init_jiffies + msecs_to_jiffies(cycle_beacon_count * vif->bss_conf.beacon_int * 1024 / 1000));
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))    
+    mod_timer(&evif->beacon_timer, init_jiffies + msecs_to_jiffies(cycle_beacon_count * vif->bss_conf.beacon_int*1024/1000));
 #else
-    mod_timer(&evif->beacon_timer, init_jiffies + msecs_to_jiffies(cycle_beacon_count * evif->beacon_interval * 1024 / 1000));
+    mod_timer(&evif->beacon_timer, init_jiffies +msecs_to_jiffies(cycle_beacon_count * evif->beacon_interval*1024/1000));
 #endif
-
     //FIXME:the packets must be sent at home channel
     //send buffer mcast frames
-    if (tim_reach) {
+    if(tim_reach){
         skb = ieee80211_get_buffered_bc(evif->epub->hw, vif);
-
         while (skb) {
             sip_tx_data_pkt_enqueue(evif->epub, skb);
             skb = ieee80211_get_buffered_bc(evif->epub->hw, vif);
@@ -515,16 +519,21 @@ static void init_beacon_timer(struct ieee80211_vif *vif)
     ESP_IEEE80211_DBG(ESP_DBG_OP, " %s enter: beacon interval %x\n", __func__, evif->beacon_interval);
 
     beacon_tim_init();
-    init_timer(&evif->beacon_timer);  //TBD, not init here...
-    cycle_beacon_count = 1;
-    init_jiffies = jiffies;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))
     evif->beacon_timer.expires = init_jiffies + msecs_to_jiffies(cycle_beacon_count * vif->bss_conf.beacon_int * 1024 / 1000);
 #else
     evif->beacon_timer.expires = init_jiffies + msecs_to_jiffies(cycle_beacon_count * evif->beacon_interval * 1024 / 1000);
 #endif
+#if LINUX_VERSION_CODE < KERNEL_VERSION(4, 15, 0)
+        init_timer(&evif->beacon_timer);  //TBD, not init here...
+    cycle_beacon_count = 1;
+    init_jiffies = jiffies;
     evif->beacon_timer.data = (unsigned long) vif;
     evif->beacon_timer.function = drv_handle_beacon;
+#else
+    _gvif = vif;
+    timer_setup(&evif->beacon_timer, drv_handle_beacon, 0);
+#endif
     add_timer(&evif->beacon_timer);
 }
 #endif
@@ -536,23 +545,23 @@ static void init_beacon_timer(struct ieee80211_vif *vif)
     static void init_beacon_timer(struct ieee80211_conf *conf)
 #endif
 {
-	struct esp_vif *evif = (struct esp_vif *)vif->drv_priv;
+    struct esp_vif *evif = (struct esp_vif *)vif->drv_priv;
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))
-	ESP_IEEE80211_DBG(ESP_DBG_OP, " %s enter: beacon interval %x\n", __func__, vif->bss_conf.beacon_int);
+    ESP_IEEE80211_DBG(ESP_DBG_OP, " %s enter: beacon interval %x\n", __func__, vif->bss_conf.beacon_int);
 #else
-	ESP_IEEE80211_DBG(ESP_DBG_OP, " %s enter: beacon interval %x\n", __func__, conf->beacon_int);
+    ESP_IEEE80211_DBG(ESP_DBG_OP, " %s enter: beacon interval %x\n", __func__, conf->beacon_int);
 #endif
-	init_timer(&evif->beacon_timer);  //TBD, not init here...
+    init_timer(&evif->beacon_timer);  //TBD, not init here...
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 28))
-	evif->beacon_timer.expires=jiffies+msecs_to_jiffies(vif->bss_conf.beacon_int*102/100);
-	evif->beacon_timer.data = (unsigned long) vif;
+    evif->beacon_timer.expires=jiffies+msecs_to_jiffies(vif->bss_conf.beacon_int*102/100);
+    evif->beacon_timer.data = (unsigned long) vif;
 #else
-	evif->beacon_timer.expires=jiffies+msecs_to_jiffies(conf->beacon_int*102/100);
-	evif->beacon_timer.data = (unsigned long) conf;
+    evif->beacon_timer.expires=jiffies+msecs_to_jiffies(conf->beacon_int*102/100);
+    evif->beacon_timer.data = (unsigned long) conf;
 #endif
-	//evif->beacon_timer.data = (unsigned long) vif;
-	evif->beacon_timer.function = drv_handle_beacon;
-	add_timer(&evif->beacon_timer);
+    //evif->beacon_timer.data = (unsigned long) vif;
+    evif->beacon_timer.function = drv_handle_beacon;
+    add_timer(&evif->beacon_timer);
 }
 */
 
@@ -1736,7 +1745,7 @@ static int esp_op_ampdu_action(struct ieee80211_hw *hw,
             }
 
             //if (vif->p2p || vif->type != NL80211_IFTYPE_STATION)
-            //	return ret;
+            //    return ret;
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2, 6, 28))
             ESP_IEEE80211_DBG(ESP_DBG_ERROR, "%s TX START, addr:%pM,tid:%u\n", __func__, addr, tid);
